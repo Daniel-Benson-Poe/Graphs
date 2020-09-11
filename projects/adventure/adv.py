@@ -29,7 +29,8 @@ player = Player(world.starting_room)
 # Fill this out with directions to walk
 # traversal_path = ['n', 'n']
 traversal_path = []
-g = Graph(player)
+g = Graph(player, world)
+g.populate_directory()
 g.dft()
 for room in g.path:
     traversal_path.append(room)
