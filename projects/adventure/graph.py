@@ -73,6 +73,7 @@ class Graph:
 
         # check if current room is in visited set
         current_room = self.get_room_id()
+
         print(f"You currently reside in room: {current_room}")
         if current_room not in self.visited:
             print(f"Current room {current_room} not in visited set")
@@ -85,9 +86,15 @@ class Graph:
                 print(f"Added exit {ex} to stack")
                 self.directory[current_room].update({ex : '?'})
                 print(f"Updated directory of current room: {self.directory[current_room]}")
+        elif '?' in self.directory[current_room].values():
+            print(f"Current room found in visited set, but there still contains '?' exits: {self.directory[current_room]}")
+            for ex in self.directory[current_room]:
+                if self.directory[current_room][ex] == '?':
+                    s.push(ex)
 
         else:
             print(f"Current room already in visited set: commencing bfs.")
+            print(f"Current room exits include: {self.directory[current_room]}")
             s = Stack()
             print(f"Created new empty stack: {s.stack}")
             path = self.bfs()
@@ -96,9 +103,8 @@ class Graph:
                 return
             for room in path:
                 print(f"Room {room} in path")
-                if self.get_room_id() == room:
+                if current_room == room:
                     print(f"This is the room you reside in: {room}")
-                    continue
                 else:
                     print(f"You do not reside in this room {room}")
                     for direction in self.directory[current_room]:
@@ -108,25 +114,31 @@ class Graph:
                             self.player.travel(direction)
                             self.path.append(direction)
                             print(f"Player has moved to room {self.get_room_id()}")
+                            print(f"Checking directory: {self.directory[self.get_room_id()]}")
+                            print(f"Checking stack: {s.stack}")
+                current_room = self.get_room_id()
 
 
         
         # while stack is not empty
         while s.size() > 0:
+            current_room = self.get_room_id()
+            print(f"Player's current room: {current_room}")
             print(f"Size of stack is greater than 0: {s.size()}")
             print(f"Stack currently holds: {s.stack}")
             # pop last value from stack and store it in variable
             direction = s.pop()
             print(f"Popped direction {direction} from end of stack. stack now holds: {s.stack}")
-            if self.directory[current_room][direction] == '?':
-                print(f"Value of current room at position direction == ?: {self.directory[current_room][direction]}")
-                # move in the popped direction
-                self.player.travel(direction)
-                self.path.append(direction)
-                print(f"Player traveled to room: {self.get_room_id()}")
-                self.directory[current_room][direction] = self.get_room_id()
-                print(f"Updated direction to point to new room: {self.directory[current_room]}")
-                self.dft(s)
+            if direction in self.directory[current_room].keys():
+                if self.directory[current_room][direction] == '?':
+                    print(f"Value of current room at position direction == ?: {self.directory[current_room][direction]}")
+                    # move in the popped direction
+                    self.player.travel(direction)
+                    self.path.append(direction)
+                    print(f"Player traveled to room: {self.get_room_id()}")
+                    self.directory[current_room][direction] = self.get_room_id()
+                    print(f"Updated direction to point to new room: {self.directory[current_room]}")
+                    self.dft(s)
 
 
     def bfs(self, destination_room='?'):
