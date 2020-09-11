@@ -52,6 +52,7 @@ class Graph:
         self.player = player
         self.visited = set()
         self.directory = {}
+        self.path = []
     
     # get player's current room id
     def get_room_id(self):
@@ -91,9 +92,11 @@ class Graph:
             print(f"Created new empty stack: {s.stack}")
             path = self.bfs()
             print(f"Created path to unvisited room: {path}")
+            if path is None:
+                return
             for room in path:
                 print(f"Room {room} in path")
-                if self.get_room_id == room:
+                if self.get_room_id() == room:
                     print(f"This is the room you reside in: {room}")
                     continue
                 else:
@@ -103,6 +106,7 @@ class Graph:
                         if self.directory[current_room][direction] == room:
                             print(f"Path to room has been found")
                             self.player.travel(direction)
+                            self.path.append(direction)
                             print(f"Player has moved to room {self.get_room_id()}")
 
 
@@ -118,6 +122,7 @@ class Graph:
                 print(f"Value of current room at position direction == ?: {self.directory[current_room][direction]}")
                 # move in the popped direction
                 self.player.travel(direction)
+                self.path.append(direction)
                 print(f"Player traveled to room: {self.get_room_id()}")
                 self.directory[current_room][direction] = self.get_room_id()
                 print(f"Updated direction to point to new room: {self.directory[current_room]}")
